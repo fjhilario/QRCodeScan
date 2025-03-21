@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location Tracker</title>
+    <script>
+        function sendLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    let latitude = position.coords.latitude;
+                    let longitude = position.coords.longitude;
+                    let timestamp = new Date().toISOString();
+
+                    let data = {
+                        lat: latitude,
+                        lon: longitude,
+                        time: timestamp
+                    };
+
+                    fetch("https://hooks.zapier.com/hooks/catch/your-webhook-id/", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(data)
+                    }).then(response => {
+                        document.body.innerHTML = "<h2>Location Sent!</h2>";
+                    }).catch(error => {
+                        document.body.innerHTML = "<h2>Error Sending Location</h2>";
+                    });
+
+                }, function(error) {
+                    document.body.innerHTML = "<h2>Location Access Denied</h2>";
+                });
+            } else {
+                document.body.innerHTML = "<h2>Geolocation Not Supported</h2>";
+            }
+        }
+
+        window.onload = sendLocation;
+    </script>
+</head>
+<body>
+    <h2>Sending Location...</h2>
+</body>
+</html>
